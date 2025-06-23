@@ -45,10 +45,10 @@ export interface ZoomWebinar {
 
 /** Webinar registrant information */
 export interface ZoomRegistrant {
-  id: string;
-  webinar_id: string;
-  registrant_id: string;
-  registrant_uuid: string | null;
+  id: string; // DB primary key
+  webinar_id: string; // Foreign key to zoom_webinars table
+  registrant_id: string; // Zoom's unique ID for the registrant (e.g., from apiRegistrant.id)
+  registrant_uuid: string | null; // A separate UUID for the registrant, if provided by Zoom
   registrant_email: string;
   first_name: string | null;
   last_name: string | null;
@@ -65,12 +65,24 @@ export interface ZoomRegistrant {
   role_in_purchase_process: string | null;
   no_of_employees: string | null;
   comments: string | null;
-  status: string | null;
-  create_time: string | null;
+  status: string | null; // e.g., 'approved', 'pending', 'denied'
+  create_time: string | null; // Timestamp from Zoom, possibly when the record was created on their end (apiRegistrant.create_time)
+  registration_time: string | null; // Timestamp from Zoom, actual time of registration (apiRegistrant.registration_time)
   join_url: string | null;
-  custom_questions: RegistrantInfo | null;
-  created_at: string | null;
-  updated_at: string | null;
+  custom_questions: RegistrantInfo | null; // JSONB, for custom registration questions
+  source_id: string | null; // Tracking source ID, if provided
+  tracking_source: string | null; // Tracking source name, if provided
+  language: string | null; // Registrant's language preference
+
+  // Fields primarily from participant data, but included for completeness if API ever sends them with registrants
+  join_time: string | null; // Actual time participant joined
+  leave_time: string | null; // Actual time participant left
+  duration: number | null; // Duration of attendance in minutes
+  attended: boolean | null; // Whether the registrant attended
+
+  // Database audit fields
+  created_at: string | null; // Timestamp of when the record was created in our database
+  updated_at: string | null; // Timestamp of when the record was last updated in our database
 }
 
 /** Webinar recording information */

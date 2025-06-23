@@ -211,7 +211,8 @@ function transformRegistrantForDatabase(apiRegistrant: any, webinarDbId: string)
   // Enhanced registrant data transformation
   return {
     webinar_id: webinarDbId,
-    registrant_id: apiRegistrant.id || apiRegistrant.registrant_id,
+    registrant_id: apiRegistrant.id || apiRegistrant.registrant_id, // Zoom's unique ID for the registrant record
+    registrant_uuid: apiRegistrant.registrant_uuid || null, // Assuming Zoom might provide a separate UUID. If apiRegistrant.id is the only UUID, this might be the same or null.
     registrant_email: apiRegistrant.email,
     first_name: apiRegistrant.first_name || null,
     last_name: apiRegistrant.last_name || null,
@@ -229,16 +230,17 @@ function transformRegistrantForDatabase(apiRegistrant: any, webinarDbId: string)
     no_of_employees: apiRegistrant.no_of_employees || null,
     comments: apiRegistrant.comments || null,
     custom_questions: apiRegistrant.custom_questions || null,
-    registration_time: apiRegistrant.registration_time || new Date().toISOString(),
+    registration_time: apiRegistrant.registration_time || null, // Actual registration time from Zoom
+    create_time: apiRegistrant.create_time || null, // Zoom's create_time for the record, may differ from registration_time
     source_id: apiRegistrant.source_id || null,
     tracking_source: apiRegistrant.tracking_source || null,
+    language: apiRegistrant.language || null,
     status: normalizedStatus,
     join_url: apiRegistrant.join_url || null,
-    create_time: apiRegistrant.create_time || null,
-    language: apiRegistrant.language || null,
-    join_time: null, // Will be updated from participant data if available
-    leave_time: null,
-    duration: null,
-    attended: false // Will be updated from participant data if available
+    // Fields intended to be updated from participant data later, or if available directly
+    join_time: apiRegistrant.join_time || null,
+    leave_time: apiRegistrant.leave_time || null,
+    duration: apiRegistrant.duration || null, // Duration of attendance
+    attended: typeof apiRegistrant.attended === 'boolean' ? apiRegistrant.attended : false
   };
 }
